@@ -19,13 +19,36 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_DB=${POSTGRES_DB}
 
+  prestart:
+    image: '${DOCKER_IMAGE_BACKEND}:${TAG-latest}'
+    build:
+      context: backend
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    command: ["uv", "run", "alembic", "upgrade", "head"]
+    env_file:
+      - .env 
+    environment:
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
+
   backend:
+    image: '${DOCKER_IMAGE_BACKEND}:${TAG-latest}'
     build:
       context: backend
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
+        restart: true
+      prestart:
+        condition: service_completed_successfully
     ports:
       - 8000:8000
     env_file:
