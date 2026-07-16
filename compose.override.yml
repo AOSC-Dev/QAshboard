@@ -1,0 +1,20 @@
+services:
+  db:
+    restart: no
+    ports:
+      - 5432:5432
+
+  backend:
+    restart: no
+    environment:
+      - UV_NO_DEV=0
+    command: uv run fastapi dev app/main.py --host 0.0.0.0 --port 8000
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app
+          ignore:
+            - .venv/
+        - action: rebuild
+          path: ./backend/pyproject.toml
