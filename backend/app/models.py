@@ -1,4 +1,5 @@
 from datetime import datetime
+from pydantic import BaseModel
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, DateTime as SaDateTime, func
 
@@ -28,3 +29,9 @@ class BuildCreate(BuildBase):
 
 class BuildPublic(BuildBase):
     id: int
+
+
+class CoveragePoint(BaseModel):
+    snapshot: datetime
+    architecture: str
+    coverage: float
