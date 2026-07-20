@@ -69,6 +69,20 @@ export type BuildPublic = {
 };
 
 /**
+ * Builds
+ */
+export type Builds = {
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Items
+     */
+    items: Array<BuildPublic>;
+};
+
+/**
  * CoveragePoint
  */
 export type CoveragePoint = {
@@ -169,11 +183,9 @@ export type GetBuildsError = GetBuildsErrors[keyof GetBuildsErrors];
 
 export type GetBuildsResponses = {
     /**
-     * Response Get Builds
-     *
      * Successful Response
      */
-    200: Array<BuildPublic>;
+    200: Builds;
 };
 
 export type GetBuildsResponse = GetBuildsResponses[keyof GetBuildsResponses];

@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, Query
 from datetime import datetime, timedelta, timezone
-from sqlalchemy import text
+from sqlalchemy import func, text
 from sqlmodel import select
 
 from app.api.deps import SessionDep
-from app.models import Build, BuildCreate, BuildPublic, CoveragePoint
+from app.models import Build, BuildCreate, BuildPublic, Builds, CoveragePoint
 
 
 router = APIRouter()
@@ -15,10 +15,11 @@ async def health_check() -> bool:
     return True
 
 
-@router.get("/builds", response_model=list[BuildPublic])
+@router.get("/builds", response_model=Builds)
 async def get_builds(session: SessionDep, offset: int = 0, limit: int = 10):
+    total = session.exec(select(func.count()).select_from(Build)).one()
     builds = session.exec(select(Build).offset(offset).limit(limit)).all()
-    return builds
+    return Builds(total=total, items=[BuildPublic.model_validate(build) for build in builds])
 
 
 @router.get("/builds/{id}", response_model=BuildPublic)

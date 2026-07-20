@@ -31,6 +31,11 @@ class BuildPublic(BuildBase):
     id: int
 
 
+class Builds(BaseModel):
+    total: int
+    items: list[BuildPublic]
+
+
 class CoveragePoint(BaseModel):
     snapshot: datetime
     architecture: str
