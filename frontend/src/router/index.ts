@@ -7,6 +7,7 @@
 // Composables
 import { createRouter, createWebHistory } from "vue-router";
 import Index from "@/pages/index.vue";
+import builds from "@/pages/builds.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +16,10 @@ const router = createRouter({
       path: "/",
       component: Index,
     },
+    {
+      path: "/builds",
+      component: builds
+    }
   ],
 });
 
