@@ -49,8 +49,6 @@ services:
         restart: true
       prestart:
         condition: service_completed_successfully
-    ports:
-      - 8000:8000
     env_file:
       - .env
     environment:
@@ -59,6 +57,21 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.${STACK_NAME}-backend.loadbalancer.server.port=8000
+      - traefik.http.routers.${STACK_NAME}-backend.rule=Host(`${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/docs`))
+  
+  frontend:
+    build:
+      context: frontend
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.${STACK_NAME}-frontend.loadbalancer.server.port=80
+      - traefik.http.routers.${STACK_NAME}-frontend.rule=Host(`${DOMAIN}`)
+
+
 
 volumes:
   db-data:
