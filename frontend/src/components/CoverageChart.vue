@@ -3,8 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, provide, onMounted } from "vue";
-import { useTheme } from "vuetify";
+import { ref, onMounted } from "vue";
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 import { LineChart } from "echarts/charts";
@@ -17,7 +16,7 @@ import {
   TransformComponent,
 } from "echarts/components";
 import type { ECBasicOption } from "echarts/types/dist/shared";
-import VChart, { THEME_KEY } from "vue-echarts";
+import VChart from "vue-echarts";
 import { getCoverage } from "@/client";
 
 use([
@@ -31,11 +30,6 @@ use([
   TransformComponent,
 ]);
 
-const theme = useTheme();
-provide(THEME_KEY, () =>
-  theme.global.current.value.dark ? "dark" : "default",
-);
-
 const option = ref<ECBasicOption>();
 
 onMounted(async () => {
@@ -46,7 +40,6 @@ onMounted(async () => {
   const architectures = [...new Set(coverage.map((i) => i.architecture))];
 
   option.value = {
-    backgroundColor: "transparent",
     legend: {},
     tooltip: { trigger: "axis" },
     xAxis: { type: "time" },
