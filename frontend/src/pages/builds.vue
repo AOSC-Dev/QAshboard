@@ -1,6 +1,8 @@
 <template>
   <v-container class="h-full flex items-center">
-    <BuildsComponent />
+    <v-card class="w-full">
+      <BuildsComponent />
+    </v-card>
   </v-container>
 </template>
 
