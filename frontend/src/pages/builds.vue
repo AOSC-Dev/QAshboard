@@ -1,5 +1,7 @@
 <template>
-  <v-container class="h-full flex items-center">
+  <v-container class="grid gap-4">
+    <v-card :title="$t('builds.title')" />
+
     <v-card class="w-full">
       <BuildsComponent />
     </v-card>

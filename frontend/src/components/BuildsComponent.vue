@@ -6,7 +6,17 @@
     :loading="loading"
     @update:options="loadItems"
     :hide-default-footer="hideDefaultFooter"
-  />
+  >
+    <template v-slot:item.success="{ value }">
+      <v-icon
+        :icon="value ? 'mdi-check' : 'mdi-close'"
+        :color="value ? 'success' : 'error'"
+      />
+    </template>
+    <template v-slot:item.timestamp="{ value }">
+      {{ new Date(value).toLocaleDateString() }}
+    </template>
+  </v-data-table-server>
 </template>
 
 <script setup lang="ts">
@@ -27,7 +37,10 @@ const loadItems = async (opts: { page: number; itemsPerPage: number }) => {
   loading.value = true;
   const { page, itemsPerPage } = opts;
   const { data, error } = await getBuilds({
-    query: { limit: itemsPerPage, offset: (page - 1) * itemsPerPage },
+    query: {
+      limit: itemsPerPage,
+      offset: (page - 1) * itemsPerPage,
+    },
   });
   totalItems.value = data?.total ?? 0;
   items.value = data?.items ?? [];
