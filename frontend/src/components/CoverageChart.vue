@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, watch } from "vue";
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 import { LineChart } from "echarts/charts";
@@ -30,11 +30,17 @@ use([
   TransformComponent,
 ]);
 
+const props = defineProps<{ start?: Date; end?: Date }>();
+
 const option = ref<ECBasicOption>();
 
-onMounted(async () => {
+const update = async () => {
   const { data } = await getCoverage({
-    query: { interval: "P1D" },
+    query: {
+      start: props.start?.toISOString(),
+      end: props.end?.toISOString(),
+      interval: "P1D",
+    },
   });
   const coverage = data ?? [];
   const architectures = [...new Set(coverage.map((i) => i.architecture))];
@@ -61,7 +67,9 @@ onMounted(async () => {
       tooltip: {
         valueFormatter: (y: number) => y.toFixed(2) + " %",
       },
-    })),
+    })) || undefined,
   };
-});
+};
+
+watch([() => props.start, () => props.end], update, { immediate: true });
 </script>
