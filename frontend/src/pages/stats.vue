@@ -1,16 +1,16 @@
 <template>
   <v-container class="grid gap-4">
-    <v-card title="Stats" />
+    <v-card :title="$t('stats.title')" />
 
     <v-container class="flex gap-4 items-center">
       <v-date-input
-        label="Start"
+        :label="$t('stats.start')"
         v-model="start"
         hide-details
         :allowed-dates="(d) => (d ? d < end : true)"
       />
       <v-date-input
-        label="End"
+        :label="$t('stats.end')"
         v-model="end"
         hide-details
         :allowed-dates="

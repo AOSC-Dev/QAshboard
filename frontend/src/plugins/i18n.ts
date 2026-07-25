@@ -4,15 +4,17 @@ const messages = {
   en: {
     home: {
       title: "Home",
-      links:{
+      links: {
         aoscIo: "Official website of AOSC",
         aoscPackages: "AOSC Packages website",
-        aoscBuildIt: "AOSC BuildIt! building automation infrastructure"
+        aoscBuildIt: "AOSC BuildIt! building automation infrastructure",
       },
-      allBuilds: "All builds"
+      allBuilds: "All builds",
     },
     stats: {
       title: "Stats",
+      start: "Start",
+      end: "End",
     },
     builds: {
       title: "Builds",
