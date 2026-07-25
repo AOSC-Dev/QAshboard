@@ -5,6 +5,7 @@
     :items-length="totalItems"
     :loading="loading"
     @update:options="loadItems"
+    :hide-default-footer="hideDefaultFooter"
   />
 </template>
 
@@ -12,7 +13,12 @@
 import { ref } from "vue";
 import { getBuilds, type BuildPublic } from "@/client";
 
-const itemsPerPage = ref(10);
+const props = withDefaults(
+  defineProps<{ defaultItemsPerPage?: number; hideDefaultFooter?: boolean }>(),
+  { defaultItemsPerPage: 10, hideDefaultFooter: false },
+);
+
+const itemsPerPage = ref(props.defaultItemsPerPage);
 const items = ref<BuildPublic[]>([]);
 const loading = ref(true);
 const totalItems = ref(0);

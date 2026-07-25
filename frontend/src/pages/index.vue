@@ -1,8 +1,47 @@
 <template>
-  <v-container class="h-full items-center">
-    <v-card :title="$t('home.title')" class="block" />
+  <v-container class="grid gap-4 items-center">
+    <v-card class="block">
+      <v-card-item>
+        <v-card-subtitle>
+          <a href="https://aosc.io" target="_blank">AOSC</a>
+          <span> / </span><a href="/">QAshboard</a>
+        </v-card-subtitle>
+      </v-card-item>
+      <v-card-text class="text-4xl flex justify-start items-center">
+        <a href="https://aosc.io" target="_blank" class="w-[1em]">
+          <v-img src="@/assets/logo.svg" />
+        </a>
+        <span>/</span> <a href="/">QAshboard</a>
+      </v-card-text>
+    </v-card>
 
-    <div class="grid sm:grid-cols-3 gap-4 mt-4">
+    <div class="grid sm:grid-cols-3 gap-4">
+      <v-card
+        title="AOSC.io"
+        :subtitle="$t('home.links.aoscIo')"
+        append-icon="mdi-open-in-new"
+        href="https://aosc.io"
+        target="_blank"
+      />
+      <v-card
+        title="Packages"
+        :subtitle="$t('home.links.aoscPackages')"
+        append-icon="mdi-open-in-new"
+        href="https://packages.aosc.io"
+        target="_blank"
+      />
+      <v-card
+        title="BuildIt!"
+        :subtitle="$t('home.links.aoscBuildIt')"
+        append-icon="mdi-open-in-new"
+        href="https://buildit.aosc.io"
+        target="_blank"
+      />
+    </div>
+
+    <v-divider />
+
+    <div class="grid sm:grid-cols-3 gap-4">
       <v-card v-for="item in latestCoverage">
         <v-card-title>{{ item.architecture }}</v-card-title>
         <div class="w-40 h-40 mx-auto mb-2">
@@ -10,6 +49,17 @@
         </div>
       </v-card>
     </div>
+
+    <v-card>
+      <builds-component
+        :default-items-per-page="5"
+        :hide-default-footer="true"
+      />
+    </v-card>
+
+    <v-btn to="/builds" append-icon="mdi-arrow-right">
+      {{ $t("home.allBuilds") }}
+    </v-btn>
   </v-container>
 </template>
 
@@ -21,6 +71,7 @@ import { PieChart } from "echarts/charts";
 import { TitleComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import { getCoverage } from "@/client";
+import BuildsComponent from "@/components/BuildsComponent.vue";
 
 use([TitleComponent, PieChart, CanvasRenderer]);
 
