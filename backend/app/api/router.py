@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from datetime import datetime, timedelta, timezone
 from sqlalchemy import func, text
-from sqlmodel import select
+from sqlmodel import col, select
 
 from app.api.deps import SessionDep
 from app.models import Build, BuildCreate, BuildPublic, Builds, CoveragePoint
@@ -18,8 +18,15 @@ async def health_check() -> bool:
 @router.get("/builds", response_model=Builds)
 async def get_builds(session: SessionDep, offset: int = 0, limit: int = 10):
     total = session.exec(select(func.count()).select_from(Build)).one()
-    builds = session.exec(select(Build).offset(offset).limit(limit)).all()
-    return Builds(total=total, items=[BuildPublic.model_validate(build) for build in builds])
+    builds = session.exec(
+        select(Build)
+        .order_by(col(Build.id).desc())
+        .offset(offset)
+        .limit(limit if limit != -1 else None)
+    ).all()
+    return Builds(
+        total=total, items=[BuildPublic.model_validate(build) for build in builds]
+    )
 
 
 @router.get("/builds/{id}", response_model=BuildPublic)
