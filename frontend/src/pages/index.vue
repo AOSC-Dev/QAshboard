@@ -66,29 +66,52 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import VChart from "vue-echarts";
+import { useTheme } from "vuetify";
 import { use } from "echarts/core";
 import { PieChart } from "echarts/charts";
 import { TitleComponent } from "echarts/components";
-import { CanvasRenderer } from "echarts/renderers";
+import { SVGRenderer } from "echarts/renderers";
 import { getCoverage } from "@/client";
 import BuildsComponent from "@/components/BuildsComponent.vue";
 
-use([TitleComponent, PieChart, CanvasRenderer]);
+use([TitleComponent, PieChart, SVGRenderer]);
+
+const theme = useTheme();
 
 const options = (coverage: number) => {
   const a = coverage.toFixed(2);
   const b = (100 - Number(a)).toFixed(2);
   return {
+    title: {
+      text: `${a}%`,
+      subtext: "successful",
+      top: "37%",
+      itemGap: 2,
+    },
     series: [
       {
         type: "pie",
-        label: { show: false, position: "center" },
         labelLine: { show: false },
-        emphasis: { label: { show: true } },
-        radius: ["40%", "80%"],
+        radius: ["58%", "80%"],
         data: [
-          { value: a, name: a },
-          { value: b, name: b },
+          {
+            value: a,
+            name: a,
+            itemStyle: {
+              color: theme.current.value.colors.primary,
+              borderColor: theme.current.value.colors["surface-variant"],
+              borderWidth: 2,
+            },
+          },
+          {
+            value: b,
+            name: b,
+            itemStyle: {
+              color: theme.current.value.colors.surface,
+              borderColor: theme.current.value.colors["surface-variant"],
+              borderWidth: 2,
+            },
+          },
         ],
       },
     ],
