@@ -11,12 +11,12 @@ router = APIRouter()
 
 
 @router.get("/health-check")
-async def health_check() -> bool:
+def health_check() -> bool:
     return True
 
 
 @router.get("/builds", response_model=Builds)
-async def get_builds(session: SessionDep, offset: int = 0, limit: int = 10):
+def get_builds(session: SessionDep, offset: int = 0, limit: int = 10):
     total = session.exec(select(func.count()).select_from(Build)).one()
     builds = session.exec(
         select(Build)
@@ -30,7 +30,7 @@ async def get_builds(session: SessionDep, offset: int = 0, limit: int = 10):
 
 
 @router.get("/builds/{id}", response_model=BuildPublic)
-async def get_build(id: int, session: SessionDep):
+def get_build(id: int, session: SessionDep):
     build = session.get(Build, id)
     if not build:
         raise HTTPException(status_code=404, detail="Build not found")
@@ -38,7 +38,7 @@ async def get_build(id: int, session: SessionDep):
 
 
 @router.post("/builds", response_model=BuildPublic)
-async def add_build(build: BuildCreate, session: SessionDep):
+def add_build(build: BuildCreate, session: SessionDep):
     db_build = Build.model_validate(build)
     session.add(db_build)
     session.commit()
@@ -47,7 +47,7 @@ async def add_build(build: BuildCreate, session: SessionDep):
 
 
 @router.get("/stats/coverage", response_model=list[CoveragePoint])
-async def get_coverage(
+def get_coverage(
     session: SessionDep,
     start: datetime = Query(datetime(2020, 1, 1, tzinfo=timezone.utc)),
     end: datetime = Query(datetime.now(timezone.utc)),
