@@ -16,14 +16,26 @@ def health_check() -> bool:
 
 
 @router.get("/builds", response_model=Builds)
-def get_builds(session: SessionDep, offset: int = 0, limit: int = 10):
-    total = session.exec(select(func.count()).select_from(Build)).one()
-    builds = session.exec(
+def get_builds(
+    session: SessionDep,
+    offset: int = 0,
+    limit: int = 10,
+    success: bool | None = None,
+):
+    total_stmt = select(func.count()).select_from(Build)
+    build_stmt = (
         select(Build)
         .order_by(col(Build.id).desc())
         .offset(offset)
         .limit(limit if limit != -1 else None)
-    ).all()
+    )
+    if success is not None:
+        total_stmt = total_stmt.where(Build.success == success)
+        build_stmt = build_stmt.where(Build.success == success)
+
+    total = session.exec(total_stmt).one()
+    builds = session.exec(build_stmt).all()
+
     return Builds(
         total=total, items=[BuildPublic.model_validate(build) for build in builds]
     )

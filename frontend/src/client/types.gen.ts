@@ -168,6 +168,10 @@ export type GetBuildsData = {
          * Limit
          */
         limit?: number;
+        /**
+         * Success
+         */
+        success?: boolean | null;
     };
     url: '/api/v1/builds';
 };
