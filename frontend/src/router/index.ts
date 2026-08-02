@@ -1,31 +1,13 @@
-/**
- * router/index.ts
- *
- * Manual routes for ./src/pages/*.vue
- */
-
-// Composables
 import { createRouter, createWebHistory } from "vue-router";
-import Index from "@/pages/index.vue";
-import builds from "@/pages/builds.vue";
-import stats from "@/pages/stats.vue";
+import { routes, handleHotUpdate } from "vue-router/auto-routes";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: "/",
-      component: Index,
-    },
-    {
-      path: "/stats",
-      component: stats,
-    },
-    {
-      path: "/builds",
-      component: builds,
-    },
-  ],
+  routes,
 });
+
+if (import.meta.hot) {
+  handleHotUpdate(router);
+}
 
 export default router;

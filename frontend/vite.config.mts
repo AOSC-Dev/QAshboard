@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from "node:url";
+import VueRouter from 'vue-router/vite'
 import Vue from "@vitejs/plugin-vue";
 import UnoCSS from "unocss/vite";
 import Fonts from "unplugin-fonts/vite";
@@ -8,6 +9,7 @@ import Vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    VueRouter(),
     Vue({
       template: { transformAssetUrls },
     }), // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#readme
