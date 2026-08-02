@@ -5,6 +5,16 @@ export type ClientOptions = {
 };
 
 /**
+ * Body_upload_build_logs
+ */
+export type BodyUploadBuildLogs = {
+    /**
+     * File
+     */
+    file: Blob | File;
+};
+
+/**
  * BuildCreate
  */
 export type BuildCreate = {
@@ -248,6 +258,68 @@ export type GetBuildResponses = {
 };
 
 export type GetBuildResponse = GetBuildResponses[keyof GetBuildResponses];
+
+export type GetBuildLogsData = {
+    body?: never;
+    path: {
+        /**
+         * Id
+         */
+        id: number;
+    };
+    query?: never;
+    url: '/api/v1/builds/{id}/logs';
+};
+
+export type GetBuildLogsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetBuildLogsError = GetBuildLogsErrors[keyof GetBuildLogsErrors];
+
+export type GetBuildLogsResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type UploadBuildLogsData = {
+    body: BodyUploadBuildLogs;
+    path: {
+        /**
+         * Id
+         */
+        id: number;
+    };
+    query?: never;
+    url: '/api/v1/builds/{id}/logs';
+};
+
+export type UploadBuildLogsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UploadBuildLogsError = UploadBuildLogsErrors[keyof UploadBuildLogsErrors];
+
+export type UploadBuildLogsResponses = {
+    /**
+     * Successful Response
+     */
+    201: unknown;
+    /**
+     * Build log replaced
+     */
+    204: void;
+};
+
+export type UploadBuildLogsResponse = UploadBuildLogsResponses[keyof UploadBuildLogsResponses];
 
 export type GetCoverageData = {
     body?: never;

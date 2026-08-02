@@ -1,9 +1,14 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Response, status, UploadFile
+from fastapi.responses import FileResponse
 from datetime import datetime, timedelta, timezone
+from os import replace
+from pathlib import Path
 from sqlalchemy import func, text
 from sqlmodel import col, select
+from tempfile import NamedTemporaryFile
 
 from app.api.deps import SessionDep
+from app.config import settings
 from app.models import Build, BuildCreate, BuildPublic, Builds, CoveragePoint
 
 
@@ -56,6 +61,47 @@ def add_build(build: BuildCreate, session: SessionDep):
     session.commit()
     session.refresh(db_build)
     return db_build
+
+
+@router.put(
+    "/builds/{id}/logs",
+    status_code=status.HTTP_201_CREATED,
+    responses={status.HTTP_204_NO_CONTENT: {"description": "Build log replaced"}},
+)
+def upload_build_logs(id: int, file: UploadFile, session: SessionDep, response: Response):
+    if session.get(Build, id) is None:
+        raise HTTPException(404, "Build not found")
+
+    file_path = settings.BUILD_LOGS_PATH / str(id)
+    if file_path.exists():
+        response.status_code = status.HTTP_204_NO_CONTENT
+
+    temp_file_path: str | None = None
+    try:
+        with NamedTemporaryFile(
+            delete=False, dir=settings.BUILD_LOGS_TEMP_PATH
+        ) as temp_file:
+            temp_file_path = temp_file.name
+            while chunk := file.file.read(1024**2):
+                temp_file.write(chunk)
+        replace(temp_file_path, file_path)
+    finally:
+        if temp_file_path is not None:
+            Path(temp_file_path).unlink(missing_ok=True)
+
+    return {"id": id}
+
+
+@router.get("/builds/{id}/logs")
+def get_build_logs(id: int, session: SessionDep):
+    if session.get(Build, id) is None:
+        raise HTTPException(404, "Build not found")
+
+    file_path = settings.BUILD_LOGS_PATH / str(id)
+    if not file_path.exists():
+        raise HTTPException(404, "Build log not found")
+
+    return FileResponse(settings.BUILD_LOGS_PATH / str(id))
 
 
 @router.get("/stats/coverage", response_model=list[CoveragePoint])

@@ -52,6 +52,7 @@ services:
     env_file:
       - .env
     environment:
+      - BUILD_LOGS_PATH=/build-logs
       - POSTGRES_SERVER=db
       - POSTGRES_PORT=${POSTGRES_PORT}
       - POSTGRES_DB=${POSTGRES_DB}
@@ -61,6 +62,8 @@ services:
       - traefik.enable=true
       - traefik.http.services.${STACK_NAME}-backend.loadbalancer.server.port=8000
       - traefik.http.routers.${STACK_NAME}-backend.rule=Host(`${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/docs`))
+    volumes:
+      - build-logs:/build-logs
   
   frontend:
     build:
@@ -75,3 +78,4 @@ services:
 
 volumes:
   db-data:
+  build-logs:
