@@ -19,6 +19,14 @@
     <template v-slot:item.timestamp="{ value }">
       {{ new Date(value).toLocaleDateString() }}
     </template>
+    <template v-slot:item.id="{ value }">
+      <v-btn
+        :to="`/builds/${value}`"
+        icon="mdi-open-in-new"
+        size="small"
+        elevation="0"
+      />
+    </template>
   </v-data-table-server>
 </template>
 
