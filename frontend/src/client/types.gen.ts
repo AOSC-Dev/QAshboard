@@ -284,8 +284,10 @@ export type GetBuildLogsResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: string;
 };
+
+export type GetBuildLogsResponse = GetBuildLogsResponses[keyof GetBuildLogsResponses];
 
 export type UploadBuildLogsData = {
     body: BodyUploadBuildLogs;

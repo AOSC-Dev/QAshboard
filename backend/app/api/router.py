@@ -68,7 +68,9 @@ def add_build(build: BuildCreate, session: SessionDep):
     status_code=status.HTTP_201_CREATED,
     responses={status.HTTP_204_NO_CONTENT: {"description": "Build log replaced"}},
 )
-def upload_build_logs(id: int, file: UploadFile, session: SessionDep, response: Response):
+def upload_build_logs(
+    id: int, file: UploadFile, session: SessionDep, response: Response
+):
     if session.get(Build, id) is None:
         raise HTTPException(404, "Build not found")
 
@@ -92,7 +94,11 @@ def upload_build_logs(id: int, file: UploadFile, session: SessionDep, response: 
     return {"id": id}
 
 
-@router.get("/builds/{id}/logs")
+@router.get(
+    "/builds/{id}/logs",
+    response_class=FileResponse,
+    responses={200: {"content": {"text/plain": {"schema": {"type": "string"}}}}},
+)
 def get_build_logs(id: int, session: SessionDep):
     if session.get(Build, id) is None:
         raise HTTPException(404, "Build not found")
@@ -101,7 +107,7 @@ def get_build_logs(id: int, session: SessionDep):
     if not file_path.exists():
         raise HTTPException(404, "Build log not found")
 
-    return FileResponse(settings.BUILD_LOGS_PATH / str(id))
+    return FileResponse(settings.BUILD_LOGS_PATH / str(id), media_type="text/plain")
 
 
 @router.get("/stats/coverage", response_model=list[CoveragePoint])
