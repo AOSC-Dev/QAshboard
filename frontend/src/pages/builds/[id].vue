@@ -15,7 +15,16 @@
       </div>
     </v-card>
     <v-card class="p-4">
-      <span class="text-lg">Logs</span>
+      <div class="flex justify-between items-center">
+        <span class="text-lg">Logs</span>
+        <v-btn
+          :href="buildLogsUrl"
+          text="Raw"
+          target="_blank"
+          elevation="0"
+          append-icon="mdi-open-in-new"
+        />
+      </div>
       <v-divider class="my-2" />
       <pre
         v-if="buildLogs.data.value"
@@ -40,6 +49,7 @@ const route = useRoute();
 const buildId = computed(() => Number(route.params.id));
 const buildDetail = { data: ref(), error: ref() };
 const buildLogs = { data: ref(), error: ref() };
+const buildLogsUrl = ref("");
 
 const updateBuildDetails = async () => {
   const { data, error } = await getBuild({ path: { id: buildId.value } });
@@ -48,7 +58,10 @@ const updateBuildDetails = async () => {
 };
 
 const updateBuildlogs = async () => {
-  const { data, error } = await getBuildLogs({ path: { id: buildId.value } });
+  const { data, error, request } = await getBuildLogs({
+    path: { id: buildId.value },
+  });
+  buildLogsUrl.value = request?.url ?? "";
 
   const ansiUp = new AnsiUp();
   buildLogs.data.value = ansiUp.ansi_to_html(data || "");
