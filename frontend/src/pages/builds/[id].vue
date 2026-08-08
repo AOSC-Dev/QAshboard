@@ -14,7 +14,7 @@
         {{ buildLogs.error.value }}
       </div>
     </v-card>
-    <v-card class="p-4">
+    <v-card class="p-4" theme="dark">
       <div class="flex justify-between items-center">
         <span class="text-lg">Logs</span>
         <v-btn
