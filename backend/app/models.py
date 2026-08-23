@@ -4,6 +4,20 @@ from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, DateTime as SaDateTime, func
 
 
+class BuildBotBase(SQLModel):
+    name: str = Field(primary_key=True)
+    display_name: str | None = None
+    enabled: bool = True
+
+
+class BuildBot(BuildBotBase, table=True):
+    token_hash: str = Field(index=True, unique=True)
+
+
+class BuildBotCreate(BuildBotBase):
+    pass
+
+
 class BuildBase(SQLModel):
     package_name: str = Field(index=True)
     success: bool
@@ -15,7 +29,7 @@ class BuildBase(SQLModel):
         ),
     )
     architecture: str = Field(index=True)
-    buildbot: str = Field(index=True)
+    buildbot: str = Field(index=True, foreign_key="buildbot.name")
     failure_reason: str | None = None
 
 
