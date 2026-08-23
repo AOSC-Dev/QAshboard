@@ -21,8 +21,7 @@ def create_buildbot(session: Session, buildbot: BuildBotCreate):
 
     token = gen_token()
     bot = BuildBot(
-        name=buildbot.name,
-        display_name=buildbot.display_name,
+        **buildbot.model_dump(),
         token_hash=hash_token(token),
     )
     session.add(bot)

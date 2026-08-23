@@ -7,7 +7,7 @@ from sqlalchemy import func, text
 from sqlmodel import col, select
 from tempfile import NamedTemporaryFile
 
-from app.api.deps import SessionDep
+from app.api.deps import SessionDep, BuildBotDep, auth_exception
 from app.config import settings
 from app.models import Build, BuildCreate, BuildPublic, Builds, CoveragePoint
 
@@ -55,8 +55,11 @@ def get_build(id: int, session: SessionDep):
 
 
 @router.post("/builds", response_model=BuildPublic)
-def add_build(build: BuildCreate, session: SessionDep):
+def add_build(build: BuildCreate, session: SessionDep, buildbot: BuildBotDep):
     db_build = Build.model_validate(build)
+    if build.buildbot != buildbot.name:
+        raise auth_exception()
+
     session.add(db_build)
     session.commit()
     session.refresh(db_build)
@@ -69,10 +72,17 @@ def add_build(build: BuildCreate, session: SessionDep):
     responses={status.HTTP_204_NO_CONTENT: {"description": "Build log replaced"}},
 )
 def upload_build_logs(
-    id: int, file: UploadFile, session: SessionDep, response: Response
+    id: int,
+    file: UploadFile,
+    session: SessionDep,
+    response: Response,
+    builtbot: BuildBotDep,
 ):
-    if session.get(Build, id) is None:
+    build = session.get(Build, id)
+    if build is None:
         raise HTTPException(404, "Build not found")
+    if build.buildbot != builtbot.name:
+        raise auth_exception()
 
     file_path = settings.BUILD_LOGS_PATH / str(id)
     if file_path.exists():
