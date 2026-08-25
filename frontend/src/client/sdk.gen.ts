@@ -32,6 +32,7 @@ export const getBuilds = <ThrowOnError extends boolean = false>(options?: Option
  * Add Build
  */
 export const addBuild = <ThrowOnError extends boolean = false>(options: Options<AddBuildData, ThrowOnError>): RequestResult<AddBuildResponses, AddBuildErrors, ThrowOnError> => (options.client ?? client).post<AddBuildResponses, AddBuildErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/builds',
     ...options,
     headers: {
@@ -55,6 +56,7 @@ export const getBuildLogs = <ThrowOnError extends boolean = false>(options: Opti
  */
 export const uploadBuildLogs = <ThrowOnError extends boolean = false>(options: Options<UploadBuildLogsData, ThrowOnError>): RequestResult<UploadBuildLogsResponses, UploadBuildLogsErrors, ThrowOnError> => (options.client ?? client).put<UploadBuildLogsResponses, UploadBuildLogsErrors, ThrowOnError>({
     ...formDataBodySerializer,
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/builds/{id}/logs',
     ...options,
     headers: {
