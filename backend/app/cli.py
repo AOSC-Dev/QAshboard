@@ -19,7 +19,7 @@ def create(name: str, display_name: str | None = None):
             session, BuildBotCreate(name=name, display_name=display_name)
         )
         session.commit()
-    print(name, token)
+    print(token)
 
 
 @buildbot_cli.command()
@@ -36,7 +36,7 @@ def rotate(buildbot_name: str):
     with Session(engine) as session:
         token = rotate_token(session, buildbot_name)
         session.commit()
-    print(buildbot_name, token)
+    print(token)
 
 
 @buildbot_cli.command(name="list")
