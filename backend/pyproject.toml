@@ -15,6 +15,17 @@ dependencies = [
     "typer>=0.26.8",
 ]
 
+[project.scripts]
+qbcli = "app.cli:cli"
+
+[build-system]
+requires = ["uv_build>=0.12,<0.13"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "app"
+module-root = ""
+
 
 [tool.alembic]
 
@@ -85,4 +96,3 @@ prepend_sys_path = ["."]
 # type = "exec"
 # executable = "ruff"
 # options = "check --fix REVISION_SCRIPT_FILENAME"
-
