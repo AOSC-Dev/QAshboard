@@ -2,6 +2,7 @@
 import argparse
 import random
 import sys
+import os
 from datetime import datetime, timedelta, timezone
 from urllib import request
 import json
@@ -68,12 +69,6 @@ PACKAGE_NAMES = [
     "zstd",
 ]
 
-BUILDBOTS = {
-    "amd64": ["buildbot-amd64-01", "buildbot-amd64-02", "buildbot-amd64-03"],
-    "arm64": ["buildbot-arm64-01", "buildbot-arm64-02"],
-    "loongarch64": ["buildbot-loong-01"],
-}
-
 FAILURE_REASONS = [
     "configure: error: C compiler cannot create executables",
     "make[2]: *** [Makefile:423: libfoo.so] Error 1",
@@ -97,9 +92,8 @@ def random_timestamp(rng: random.Random, days_back: int = 90) -> str:
     return (now - delta).isoformat()
 
 
-def make_build(rng: random.Random) -> dict:
+def make_build(rng: random.Random, buildbot: str) -> dict:
     arch = rng.choice(ARCHITECTURES)
-    buildbot = rng.choice(BUILDBOTS[arch])
     success = rng.random() > 0.20
 
     return {
@@ -131,6 +125,14 @@ def parse_args() -> argparse.Namespace:
         default=42,
         help="Random seed for reproducibility (default: 42)",
     )
+    p.add_argument(
+        "--buildbot",
+        "-b",
+        type=str,
+        required=True,
+        help="Buildbot name. You have to create one using CLI first."
+        "For more information: `docker compose exec backend qbcli buildbot --help`",
+    )
     return p.parse_args()
 
 
@@ -138,19 +140,28 @@ def main() -> None:
     args = parse_args()
     rng = random.Random(args.seed)
     endpoint = f"{args.url.rstrip('/')}/builds"
+    buildbot = args.buildbot
 
     print(f"Target  : {endpoint}")
     print(f"Records : {args.count}")
     print(f"Seed    : {args.seed}")
+    print(f"Buildbot: {buildbot}")
     print()
 
+    buildbot_token = os.getenv("BUILDBOT_TOKEN")
+    if not buildbot_token:
+        raise RuntimeError("BUILDBOT_TOKEN is not set")
+
     for i in range(1, args.count + 1):
-        payload = make_build(rng)
+        payload = make_build(rng, buildbot)
         try:
             req = request.Request(
                 endpoint,
                 data=json.dumps(payload).encode("UTF-8"),
-                headers={"Content-Type": "application/json"},
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {buildbot_token}",
+                },
                 method="POST",
             )
             resp = request.urlopen(req)
