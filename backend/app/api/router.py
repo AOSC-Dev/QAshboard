@@ -7,7 +7,7 @@ from sqlalchemy import func, text
 from sqlmodel import col, select
 from tempfile import NamedTemporaryFile
 
-from app.api.deps import SessionDep, BuildBotDep, auth_exception
+from app.api.deps import SessionDep, BuildBotDep
 from app.config import settings
 from app.models import Build, BuildCreate, BuildPublic, Builds, CoveragePoint
 
@@ -50,7 +50,9 @@ def get_builds(
 def get_build(id: int, session: SessionDep):
     build = session.get(Build, id)
     if not build:
-        raise HTTPException(status_code=404, detail="Build not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Build not found"
+        )
     return build
 
 
@@ -58,7 +60,7 @@ def get_build(id: int, session: SessionDep):
 def add_build(build: BuildCreate, session: SessionDep, buildbot: BuildBotDep):
     db_build = Build.model_validate(build)
     if build.buildbot != buildbot.name:
-        raise auth_exception()
+        raise HTTPException(status.HTTP_403_FORBIDDEN)
 
     session.add(db_build)
     session.commit()
@@ -80,9 +82,9 @@ def upload_build_logs(
 ):
     build = session.get(Build, id)
     if build is None:
-        raise HTTPException(404, "Build not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Build not found")
     if build.buildbot != builtbot.name:
-        raise auth_exception()
+        raise HTTPException(status.HTTP_403_FORBIDDEN)
 
     file_path = settings.BUILD_LOGS_PATH / str(id)
     if file_path.exists():
@@ -107,15 +109,17 @@ def upload_build_logs(
 @router.get(
     "/builds/{id}/logs",
     response_class=FileResponse,
-    responses={200: {"content": {"text/plain": {"schema": {"type": "string"}}}}},
+    responses={
+        status.HTTP_200_OK: {"content": {"text/plain": {"schema": {"type": "string"}}}}
+    },
 )
 def get_build_logs(id: int, session: SessionDep):
     if session.get(Build, id) is None:
-        raise HTTPException(404, "Build not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Build not found")
 
     file_path = settings.BUILD_LOGS_PATH / str(id)
     if not file_path.exists():
-        raise HTTPException(404, "Build log not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Build log not found")
 
     return FileResponse(settings.BUILD_LOGS_PATH / str(id), media_type="text/plain")
 
@@ -133,11 +137,14 @@ def get_coverage(
     start, end = start.astimezone(timezone.utc), end.astimezone(timezone.utc)
     if end is not None and end < start:
         raise HTTPException(
-            status_code=422,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="end must be on or after start",
         )
     if interval <= timedelta(0):
-        raise HTTPException(status_code=422, detail="interval must be positive")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="interval must be positive",
+        )
 
     query = text("""
         WITH
