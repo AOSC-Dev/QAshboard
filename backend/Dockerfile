@@ -36,6 +36,9 @@ COPY . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked
 
+# Environment should not be changed anymore
+ENV UV_NO_SYNC=1
+
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
