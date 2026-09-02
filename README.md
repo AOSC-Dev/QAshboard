@@ -2,6 +2,12 @@
 
 ## Quick preview
 
+Setup `.env`
+```sh
+cp .env.example .env
+$EDITOR .env
+```
+
 Start the containers:
 ```sh
 docker compose up --build
