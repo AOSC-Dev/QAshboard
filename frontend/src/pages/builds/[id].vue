@@ -14,7 +14,7 @@
         {{ buildLogs.error.value }}
       </div>
     </v-card>
-    <v-card class="p-4" theme="dark">
+    <v-card v-if="buildLogs.status.value !== 404" class="p-4" theme="dark">
       <div class="flex justify-between items-center">
         <span class="text-lg">Logs</span>
         <v-btn
@@ -23,6 +23,7 @@
           target="_blank"
           elevation="0"
           append-icon="mdi-open-in-new"
+          :disabled="buildLogs.status.value !== 200"
         />
       </div>
       <v-divider class="my-2" />
@@ -48,7 +49,7 @@ const route = useRoute();
 
 const buildId = computed(() => Number(route.params.id));
 const buildDetail = { data: ref(), error: ref() };
-const buildLogs = { data: ref(), error: ref() };
+const buildLogs = { data: ref(), error: ref(), status: ref() };
 const buildLogsUrl = ref("");
 
 const updateBuildDetails = async () => {
@@ -58,7 +59,7 @@ const updateBuildDetails = async () => {
 };
 
 const updateBuildlogs = async () => {
-  const { data, error, request } = await getBuildLogs({
+  const { data, error, request, response } = await getBuildLogs({
     path: { id: buildId.value },
   });
   buildLogsUrl.value = request?.url ?? "";
@@ -66,6 +67,7 @@ const updateBuildlogs = async () => {
   const ansiUp = new AnsiUp();
   buildLogs.data.value = ansiUp.ansi_to_html(data || "");
   buildLogs.error.value = error;
+  buildLogs.status.value = response?.status;
 };
 
 watch(buildId, () => Promise.all([updateBuildDetails(), updateBuildlogs()]), {
