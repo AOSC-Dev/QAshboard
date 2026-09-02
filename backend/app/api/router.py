@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query, Response, status, UploadFile
+from fastapi import APIRouter, HTTPException, Response, status, UploadFile
 from fastapi.responses import FileResponse
 from datetime import datetime, timedelta, timezone
 from os import replace
@@ -127,13 +127,18 @@ def get_build_logs(id: int, session: SessionDep):
 @router.get("/stats/coverage", response_model=list[CoveragePoint])
 def get_coverage(
     session: SessionDep,
-    start: datetime = Query(datetime(2020, 1, 1, tzinfo=timezone.utc)),
-    end: datetime = Query(datetime.now(timezone.utc)),
-    interval: timedelta = Query(timedelta(weeks=1)),
+    start: datetime | None = None,
+    end: datetime | None = None,
+    interval: timedelta | None = None,
 ):
     """
     `interval` is an ISO 8601 duration, e.g. P1W or P1D.
     """
+
+    start = start if start is not None else datetime(2020, 1, 1, tzinfo=timezone.utc)
+    end = end if end is not None else datetime.now(timezone.utc)
+    interval = interval if interval is not None else timedelta(weeks=1)
+
     start, end = start.astimezone(timezone.utc), end.astimezone(timezone.utc)
     if end is not None and end < start:
         raise HTTPException(
