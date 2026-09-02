@@ -32,7 +32,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_buildbot_token_hash'), 'buildbot', ['token_hash'], unique=True)
     op.execute(sa.text("""
         INSERT INTO buildbot (name, enabled, token_hash)
-        SELECT DISTINCT buildbot, false, 'migrated-without-token'
+        SELECT DISTINCT buildbot, false, 'migrated-without-token-' || buildbot
         FROM build
     """))
     op.create_foreign_key(
