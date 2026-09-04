@@ -127,6 +127,7 @@ def get_build_logs(id: int, session: SessionDep):
 @router.get("/stats/coverage", response_model=list[CoveragePoint])
 def get_coverage(
     session: SessionDep,
+    response: Response,
     start: datetime | None = None,
     end: datetime | None = None,
     interval: timedelta | None = None,
@@ -134,6 +135,8 @@ def get_coverage(
     """
     `interval` is an ISO 8601 duration, e.g. P1W or P1D.
     """
+
+    response.headers["Cache-Control"] = "public, max-age=30"
 
     start = start if start is not None else datetime(2020, 1, 1, tzinfo=timezone.utc)
     end = end if end is not None else datetime.now(timezone.utc)

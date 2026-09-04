@@ -3,10 +3,10 @@ services:
     labels:
       traefik.enable: "false"
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8000:8011"
 
   frontend:
     labels:
       traefik.enable: "false"
     ports:
-      - "127.0.0.1:3000:80"
+      - "127.0.0.1:3011:80"
