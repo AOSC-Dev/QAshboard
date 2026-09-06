@@ -1,5 +1,7 @@
 # QAshboard
 
+Dashboard for the AOSC QA project, working alongside [QATailEnd](https://github.com/AOSC-Dev/QATailEnd).
+
 ## Quick preview
 
 Setup `.env`
