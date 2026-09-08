@@ -91,6 +91,7 @@ const options = (coverage: number) => {
     series: [
       {
         type: "pie",
+        label: {show: false},
         labelLine: { show: false },
         radius: ["58%", "80%"],
         data: [
