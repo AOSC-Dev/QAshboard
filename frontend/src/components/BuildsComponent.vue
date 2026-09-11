@@ -2,6 +2,7 @@
   <v-data-table-server
     v-model:page="page"
     v-model:items-per-page="itemsPerPage"
+    :headers="headers"
     :items="items"
     :items-length="totalItems"
     :loading="loading"
@@ -17,7 +18,7 @@
       />
     </template>
     <template v-slot:item.timestamp="{ value }">
-      {{ new Date(value).toLocaleDateString() }}
+      {{ new Date(value).toLocaleString(undefined, { timeZone }) }}
     </template>
     <template v-slot:item.id="{ value }">
       <v-btn
@@ -31,7 +32,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { getBuilds, type BuildPublic } from "@/client";
 
 const props = withDefaults(
@@ -43,12 +45,38 @@ const props = withDefaults(
   { defaultItemsPerPage: 10, hideDefaultFooter: false, success: null },
 );
 
+const { t } = useI18n();
+
 const page = ref(1);
 const itemsPerPage = ref(props.defaultItemsPerPage);
 const items = ref<BuildPublic[]>([]);
 const loading = ref(true);
 const totalItems = ref(0);
 const search = ref();
+
+const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+const headers = computed(() => [
+  { key: "success", title: t("builds.columns.success") },
+  {
+    key: "package_name",
+    title: t("builds.columns.package_name"),
+  },
+  {
+    key: "timestamp",
+    title: t("builds.columns.timestamp", [timeZone]),
+  },
+  {
+    key: "architecture",
+    title: t("builds.columns.architecture"),
+  },
+  { key: "buildbot", title: t("builds.columns.buildbot") },
+  {
+    key: "failure_reason",
+    title: t("builds.columns.failure_reason"),
+  },
+  { key: "id" },
+]);
 
 const loadItems = async (opts: { page: number; itemsPerPage: number }) => {
   loading.value = true;

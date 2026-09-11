@@ -18,6 +18,14 @@ const messages = {
     },
     builds: {
       title: "Builds",
+      columns: {
+        package_name: "Package name",
+        success: "Status",
+        timestamp: "Time ({0})",
+        architecture: "Architecture",
+        buildbot: "Buildbot",
+        failure_reason: "Failure reason",
+      },
     },
   },
 };
