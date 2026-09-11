@@ -5,6 +5,7 @@
     :headers="headers"
     :items="items"
     :items-length="totalItems"
+    :items-per-page-options="itemsPerPageOptions"
     :loading="loading"
     @update:options="loadItems"
     :hide-default-footer="hideDefaultFooter"
@@ -49,6 +50,7 @@ const { t } = useI18n();
 
 const page = ref(1);
 const itemsPerPage = ref(props.defaultItemsPerPage);
+const itemsPerPageOptions = [10, 25, 50, 100, 250, 500];
 const items = ref<BuildPublic[]>([]);
 const loading = ref(true);
 const totalItems = ref(0);
