@@ -30,5 +30,5 @@ import { shallowRef } from "vue";
 import CoverageChart from "@/components/CoverageChart.vue";
 
 const start = shallowRef();
-const end = shallowRef(new Date());
+const end = shallowRef(new Date(new Date().setHours(0, 0, 0, 0)));
 </script>
