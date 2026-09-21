@@ -3,7 +3,7 @@ from typer import Typer
 
 from app.db import engine
 from app.models import BuildBot, BuildBotCreate
-from app.services.buildbots import create_buildbot, set_buildbot, rotate_token
+from app.services.buildbots import create_buildbot, rotate_token, set_buildbot
 
 cli = Typer()
 

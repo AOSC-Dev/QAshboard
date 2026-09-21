@@ -1,7 +1,9 @@
 from datetime import datetime
+
 from pydantic import BaseModel
-from sqlmodel import SQLModel, Field
-from sqlalchemy import Column, DateTime as SaDateTime, func
+from sqlalchemy import Column, func
+from sqlalchemy import DateTime as SaDateTime
+from sqlmodel import Field, SQLModel
 
 
 class BuildBotBase(SQLModel):

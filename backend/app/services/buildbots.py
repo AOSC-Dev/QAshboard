@@ -1,5 +1,6 @@
 import hashlib
 import secrets
+
 from sqlmodel import Session
 
 from app.models import BuildBot, BuildBotCreate

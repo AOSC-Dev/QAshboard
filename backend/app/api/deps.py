@@ -1,12 +1,13 @@
 from collections.abc import Generator
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from sqlmodel import Session, select
 from typing import Annotated
 
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlmodel import Session, select
+
 from app.db import engine
-from app.services.buildbots import hash_token
 from app.models import BuildBot
+from app.services.buildbots import hash_token
 
 
 def get_db() -> Generator[Session]:

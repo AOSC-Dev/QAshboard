@@ -1,16 +1,16 @@
-from fastapi import APIRouter, HTTPException, Response, status, UploadFile
-from fastapi.responses import FileResponse
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from os import replace
 from pathlib import Path
-from sqlalchemy import func, text
-from sqlmodel import col, select
 from tempfile import NamedTemporaryFile
 
-from app.api.deps import SessionDep, BuildBotDep
+from fastapi import APIRouter, HTTPException, Response, UploadFile, status
+from fastapi.responses import FileResponse
+from sqlalchemy import func, text
+from sqlmodel import col, select
+
+from app.api.deps import BuildBotDep, SessionDep
 from app.config import settings
 from app.models import Build, BuildCreate, BuildPublic, Builds, CoveragePoint
-
 
 router = APIRouter()
 
@@ -138,11 +138,11 @@ def get_coverage(
 
     response.headers["Cache-Control"] = "public, max-age=30"
 
-    start = start if start is not None else datetime(2020, 1, 1, tzinfo=timezone.utc)
-    end = end if end is not None else datetime.now(timezone.utc)
+    start = start if start is not None else datetime(2020, 1, 1, tzinfo=UTC)
+    end = end if end is not None else datetime.now(UTC)
     interval = interval if interval is not None else timedelta(weeks=1)
 
-    start, end = start.astimezone(timezone.utc), end.astimezone(timezone.utc)
+    start, end = start.astimezone(UTC), end.astimezone(UTC)
     if end is not None and end < start:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
