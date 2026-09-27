@@ -158,7 +158,10 @@ def get_coverage(
         WITH
         snapshots AS (
             SELECT generate_series(
-                CAST(:start_date AS timestamptz),
+                GREATEST(
+                    CAST(:start_date AS timestamptz),
+                    (SELECT date_trunc('day', MIN("timestamp"), 'UTC') FROM build)
+                ),
                 COALESCE(CAST(:end_date AS timestamptz), CURRENT_DATE),
                 CAST(:interval AS interval)
             ) AS snapshot
