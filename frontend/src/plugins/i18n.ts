@@ -27,6 +27,9 @@ const messages = {
         failure_reason: "Failure reason",
       },
     },
+    packages:{
+      title: "Packages"
+    }
   },
 };
 

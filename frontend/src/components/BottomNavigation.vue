@@ -17,5 +17,10 @@ const navigation = computed(() => [
   { to: "/", icon: "mdi-view-dashboard-outline", label: t("home.title") },
   { to: "/stats", icon: "mdi-chart-line", label: t("stats.title") },
   { to: "/builds", icon: "mdi-hammer-wrench", label: t("builds.title") },
+  {
+    to: "/packages",
+    icon: "mdi-package-variant-closed",
+    label: t("packages.title"),
+  },
 ]);
 </script>
