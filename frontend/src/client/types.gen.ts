@@ -121,6 +121,24 @@ export type HttpValidationError = {
 };
 
 /**
+ * Packages
+ */
+export type Packages = {
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Architectures
+     */
+    architectures: Array<string>;
+    /**
+     * Items
+     */
+    items: Array<BuildPublic>;
+};
+
+/**
  * ValidationError
  */
 export type ValidationError = {
@@ -323,6 +341,54 @@ export type UploadBuildLogsResponses = {
 
 export type UploadBuildLogsResponse = UploadBuildLogsResponses[keyof UploadBuildLogsResponses];
 
+export type GetPackagesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Offset
+         */
+        offset?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/packages';
+};
+
+export type GetPackagesErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetPackagesError = GetPackagesErrors[keyof GetPackagesErrors];
+
+export type GetPackagesResponses = {
+    /**
+     * Successful Response
+     */
+    200: Packages;
+};
+
+export type GetPackagesResponse = GetPackagesResponses[keyof GetPackagesResponses];
+
+export type GetPackageData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/packages/{package}';
+};
+
+export type GetPackageResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
 export type GetCoverageData = {
     body?: never;
     path?: never;
@@ -330,15 +396,15 @@ export type GetCoverageData = {
         /**
          * Start
          */
-        start?: string;
+        start?: string | null;
         /**
          * End
          */
-        end?: string;
+        end?: string | null;
         /**
          * Interval
          */
-        interval?: string;
+        interval?: string | null;
     };
     url: '/api/v1/stats/coverage';
 };

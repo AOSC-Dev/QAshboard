@@ -52,6 +52,13 @@ declare module 'vue-router/auto-routes' {
       { id: ParamValue<false> },
       | never
     >,
+    '/packages/': RouteRecordInfo<
+      '/packages/',
+      '/packages',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/stats': RouteRecordInfo<
       '/stats',
       '/stats',
@@ -95,6 +102,14 @@ declare module 'vue-router/auto-routes' {
         | never
       pathParamNames:
         | 'id'
+    }
+    'src/pages/packages/index.vue': {
+      routes:
+        | '/packages/'
+      views:
+        | never
+      pathParamNames:
+        | never
     }
     'src/pages/stats.vue': {
       routes:

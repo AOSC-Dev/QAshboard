@@ -2,7 +2,7 @@
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddBuildData, AddBuildErrors, AddBuildResponses, GetBuildData, GetBuildErrors, GetBuildLogsData, GetBuildLogsErrors, GetBuildLogsResponses, GetBuildResponses, GetBuildsData, GetBuildsErrors, GetBuildsResponses, GetCoverageData, GetCoverageErrors, GetCoverageResponses, HealthCheckData, HealthCheckResponses, UploadBuildLogsData, UploadBuildLogsErrors, UploadBuildLogsResponses } from './types.gen';
+import type { AddBuildData, AddBuildErrors, AddBuildResponses, GetBuildData, GetBuildErrors, GetBuildLogsData, GetBuildLogsErrors, GetBuildLogsResponses, GetBuildResponses, GetBuildsData, GetBuildsErrors, GetBuildsResponses, GetCoverageData, GetCoverageErrors, GetCoverageResponses, GetPackageData, GetPackageResponses, GetPackagesData, GetPackagesErrors, GetPackagesResponses, HealthCheckData, HealthCheckResponses, UploadBuildLogsData, UploadBuildLogsErrors, UploadBuildLogsResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -64,6 +64,16 @@ export const uploadBuildLogs = <ThrowOnError extends boolean = false>(options: O
         ...options.headers
     }
 });
+
+/**
+ * Get Packages
+ */
+export const getPackages = <ThrowOnError extends boolean = false>(options?: Options<GetPackagesData, ThrowOnError>): RequestResult<GetPackagesResponses, GetPackagesErrors, ThrowOnError> => (options?.client ?? client).get<GetPackagesResponses, GetPackagesErrors, ThrowOnError>({ url: '/api/v1/packages', ...options });
+
+/**
+ * Get Package
+ */
+export const getPackage = <ThrowOnError extends boolean = false>(options?: Options<GetPackageData, ThrowOnError>): RequestResult<GetPackageResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetPackageResponses, unknown, ThrowOnError>({ url: '/api/v1/packages/{package}', ...options });
 
 /**
  * Get Coverage
