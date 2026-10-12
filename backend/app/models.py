@@ -52,6 +52,12 @@ class Builds(BaseModel):
     items: list[BuildPublic]
 
 
+class Packages(BaseModel):
+    total: int
+    architectures: list[str]
+    items: list[BuildPublic]
+
+
 class CoveragePoint(BaseModel):
     snapshot: datetime
     architecture: str

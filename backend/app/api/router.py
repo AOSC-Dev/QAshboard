@@ -6,11 +6,12 @@ from tempfile import NamedTemporaryFile
 from fastapi import APIRouter, HTTPException, Response, UploadFile, status
 from fastapi.responses import FileResponse
 from sqlalchemy import func, text
+from sqlalchemy.dialects.postgresql import distinct_on
 from sqlmodel import col, select
 
 from app.api.deps import BuildBotDep, SessionDep
 from app.config import settings
-from app.models import Build, BuildCreate, BuildPublic, Builds, CoveragePoint
+from app.models import Build, BuildCreate, BuildPublic, Builds, CoveragePoint, Packages
 
 router = APIRouter()
 
@@ -122,6 +123,45 @@ def get_build_logs(id: int, session: SessionDep):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Build log not found")
 
     return FileResponse(settings.BUILD_LOGS_PATH / str(id), media_type="text/plain")
+
+
+@router.get("/packages", response_model=Packages)
+def get_packages(
+    session: SessionDep,
+    offset: int = 0,
+    limit: int = 10,
+):
+    packages_stmt = select(Build.package_name).distinct().order_by(Build.package_name)
+    selected_packages = (
+        packages_stmt.offset(offset).limit(limit if limit != -1 else None).subquery()
+    )
+
+    total = session.exec(select(func.count(col(Build.package_name).distinct()))).one()
+
+    architectures = session.exec(
+        select(Build.architecture).distinct().order_by(Build.architecture)
+    ).all()
+
+    items = session.exec(
+        select(Build)
+        .join(
+            selected_packages,
+            selected_packages.c.package_name == Build.package_name,
+        )
+        .ext(distinct_on(col(Build.package_name), col(Build.architecture)))
+        .order_by(
+            Build.package_name,
+            Build.architecture,
+            col(Build.timestamp).desc(),
+            col(Build.id).desc(),
+        )
+    ).all()
+
+    return Packages(
+        total=total,
+        architectures=list(architectures),
+        items=[BuildPublic.model_validate(build) for build in items],
+    )
 
 
 @router.get("/stats/coverage", response_model=list[CoveragePoint])
