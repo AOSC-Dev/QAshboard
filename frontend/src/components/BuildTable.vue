@@ -101,7 +101,6 @@ const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const headers = computed(() => {
   const commonHeaders = [
-    { key: "data-table-group", title: t("builds.columns.package_name") },
     { key: "success", title: t("builds.columns.success") },
     {
       key: "timestamp",
@@ -118,14 +117,14 @@ const headers = computed(() => {
     },
     { key: "id" },
   ];
-  
+
   if (props.groupByPackages)
-    commonHeaders.push({
+    commonHeaders.unshift({
       key: "data-table-group",
       title: t("builds.columns.package_name"),
     });
   else
-    commonHeaders.push({
+    commonHeaders.unshift({
       key: "package_name",
       title: t("builds.columns.package_name"),
     });
