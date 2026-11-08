@@ -357,6 +357,10 @@ export type GetPackagesData = {
          * Success
          */
         success?: boolean | null;
+        /**
+         * Search
+         */
+        search?: string | null;
     };
     url: '/api/v1/packages';
 };
