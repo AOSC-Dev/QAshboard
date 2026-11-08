@@ -128,9 +128,13 @@ def get_build_logs(id: int, session: SessionDep):
 
 @router.get("/packages", response_model=Packages)
 def get_packages(
-    session: SessionDep, offset: int = 0, limit: int = 10, success: bool | None = None
+    session: SessionDep,
+    offset: int = 0,
+    limit: int = 10,
+    success: bool | None = None,
+    search: str | None = None,
 ):
-    latest_builds = (
+    latest_builds_stmt = (
         select(Build)
         .ext(distinct_on(col(Build.package_name), col(Build.architecture)))
         .order_by(
@@ -139,8 +143,14 @@ def get_packages(
             col(Build.timestamp).desc(),
             col(Build.id).desc(),
         )
-    ).cte("latest_builds")
-    latest_build = aliased(Build, latest_builds)
+    )
+
+    if search is not None:
+        latest_builds_stmt = latest_builds_stmt.where(
+            col(Build.package_name).contains(search, autoescape=True)
+        )
+
+    latest_build = aliased(Build, latest_builds_stmt.cte())
 
     packages_stmt = select(latest_build.package_name).group_by(
         latest_build.package_name
