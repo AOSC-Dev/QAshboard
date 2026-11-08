@@ -85,7 +85,7 @@ const props = withDefaults(
     hideDefaultFooter?: boolean;
     groupByPackages?: boolean;
     architectures?: string[] | null;
-    searchValues?: Object | null;
+    searchValues?: unknown;
   }>(),
   { hideDefaultFooter: false, success: null, groupByPackages: false },
 );
@@ -133,10 +133,10 @@ const headers = computed(() => {
 });
 
 watch(
-  () => props.searchValues,
-  () => {
+  () => JSON.stringify(props.searchValues),
+  (value) => {
     page.value = 1;
-    search.value = String(props.searchValues);
+    search.value = value;
   },
 );
 </script>

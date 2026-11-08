@@ -28,7 +28,7 @@
         :load-items="loadItems"
         :group-by-packages="true"
         :architectures="architectures"
-        :search-values="success + searchDebounced"
+        :search-values="[success, searchDebounced]"
       />
     </v-card>
   </v-container>
