@@ -3,6 +3,14 @@
     <v-card :title="$t('packages.title')" />
 
     <div class="flex gap-4 items-center justify-between">
+      <v-text-field
+        v-model="search"
+        :label="$t('builds.columns.package_name')"
+        type="search"
+        clearable
+        hide-details
+      />
+
       <v-btn-toggle v-model="success" mandatory>
         <v-btn icon="mdi-check" :value="true" />
         <v-btn icon="mdi-close" :value="false" />
@@ -20,7 +28,7 @@
         :load-items="loadItems"
         :group-by-packages="true"
         :architectures="architectures"
-        :success="success"
+        :search-values="success + search"
       />
     </v-card>
   </v-container>
@@ -38,6 +46,7 @@ const loading = ref(true);
 const totalItems = ref(0);
 const architectures = ref<string[]>([]);
 const success = ref(null);
+const search = ref(null);
 
 const loadItems = async (opts: { page: number; itemsPerPage: number }) => {
   loading.value = true;
@@ -47,6 +56,7 @@ const loadItems = async (opts: { page: number; itemsPerPage: number }) => {
       limit: itemsPerPage,
       offset: (page - 1) * itemsPerPage,
       success: success.value,
+      search: search.value,
     },
   });
 

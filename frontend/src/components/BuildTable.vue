@@ -83,9 +83,9 @@ const props = withDefaults(
     itemsLength: number;
     loading: boolean;
     hideDefaultFooter?: boolean;
-    success?: boolean | null;
     groupByPackages?: boolean;
     architectures?: string[] | null;
+    searchValues?: Object | null;
   }>(),
   { hideDefaultFooter: false, success: null, groupByPackages: false },
 );
@@ -133,10 +133,10 @@ const headers = computed(() => {
 });
 
 watch(
-  () => props.success,
+  () => props.searchValues,
   () => {
     page.value = 1;
-    search.value = String(props.success);
+    search.value = String(props.searchValues);
   },
 );
 </script>

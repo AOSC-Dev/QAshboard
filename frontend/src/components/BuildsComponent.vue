@@ -7,7 +7,7 @@
     :loading="loading"
     :load-items="loadItems"
     :hide-default-footer="hideDefaultFooter"
-    :success="success"
+    :search-values="success"
   >
   </build-table>
 </template>
