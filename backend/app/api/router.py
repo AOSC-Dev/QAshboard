@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, Response, UploadFile, status
 from fastapi.responses import FileResponse
 from sqlalchemy import func, text
 from sqlalchemy.dialects.postgresql import distinct_on
+from sqlalchemy.orm import aliased
 from sqlmodel import col, select
 
 from app.api.deps import BuildBotDep, SessionDep
@@ -127,33 +128,53 @@ def get_build_logs(id: int, session: SessionDep):
 
 @router.get("/packages", response_model=Packages)
 def get_packages(
-    session: SessionDep,
-    offset: int = 0,
-    limit: int = 10,
+    session: SessionDep, offset: int = 0, limit: int = 10, success: bool | None = None
 ):
-    packages_stmt = select(Build.package_name).distinct().order_by(Build.package_name)
-    selected_packages = (
-        packages_stmt.offset(offset).limit(limit if limit != -1 else None).subquery()
-    )
-
-    total = session.exec(select(func.count(col(Build.package_name).distinct()))).one()
-
-    architectures = session.exec(
-        select(Build.architecture).distinct().order_by(Build.architecture)
-    ).all()
-
-    items = session.exec(
+    latest_builds = (
         select(Build)
-        .join(
-            selected_packages,
-            selected_packages.c.package_name == Build.package_name,
-        )
         .ext(distinct_on(col(Build.package_name), col(Build.architecture)))
         .order_by(
             Build.package_name,
             Build.architecture,
             col(Build.timestamp).desc(),
             col(Build.id).desc(),
+        )
+    ).cte("latest_builds")
+    latest_build = aliased(Build, latest_builds)
+
+    packages_stmt = select(latest_build.package_name).group_by(
+        latest_build.package_name
+    )
+
+    if success is not None:
+        packages_stmt = packages_stmt.having(
+            func.bool_and(latest_build.success) == success
+        )
+
+    selected_packages = (
+        packages_stmt.order_by(latest_build.package_name)
+        .offset(offset)
+        .limit(limit if limit != -1 else None)
+        .subquery()
+    )
+
+    total = session.exec(
+        select(func.count()).select_from(packages_stmt.subquery())
+    ).one()
+
+    architectures = session.exec(
+        select(Build.architecture).distinct().order_by(Build.architecture)
+    ).all()
+
+    items = session.exec(
+        select(latest_build)
+        .join(
+            selected_packages,
+            selected_packages.c.package_name == latest_build.package_name,
+        )
+        .order_by(
+            latest_build.package_name,
+            latest_build.architecture,
         )
     ).all()
 
