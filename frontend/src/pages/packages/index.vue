@@ -2,6 +2,14 @@
   <v-container class="grid gap-4">
     <v-card :title="$t('packages.title')" />
 
+    <div class="flex gap-4 items-center justify-between">
+      <v-btn-toggle v-model="success" mandatory>
+        <v-btn icon="mdi-check" :value="true" />
+        <v-btn icon="mdi-close" :value="false" />
+        <v-btn text="All" :value="null" />
+      </v-btn-toggle>
+    </div>
+
     <v-card class="w-full">
       <build-table
         v-model:page="page"
@@ -12,6 +20,7 @@
         :load-items="loadItems"
         :group-by-packages="true"
         :architectures="architectures"
+        :success="success"
       />
     </v-card>
   </v-container>
@@ -28,6 +37,7 @@ const items = ref<BuildPublic[]>([]);
 const loading = ref(true);
 const totalItems = ref(0);
 const architectures = ref<string[]>([]);
+const success = ref(null);
 
 const loadItems = async (opts: { page: number; itemsPerPage: number }) => {
   loading.value = true;
@@ -36,6 +46,7 @@ const loadItems = async (opts: { page: number; itemsPerPage: number }) => {
     query: {
       limit: itemsPerPage,
       offset: (page - 1) * itemsPerPage,
+      success: success.value,
     },
   });
 
