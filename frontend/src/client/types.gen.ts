@@ -353,6 +353,10 @@ export type GetPackagesData = {
          * Limit
          */
         limit?: number;
+        /**
+         * Success
+         */
+        success?: boolean | null;
     };
     url: '/api/v1/packages';
 };
@@ -374,20 +378,6 @@ export type GetPackagesResponses = {
 };
 
 export type GetPackagesResponse = GetPackagesResponses[keyof GetPackagesResponses];
-
-export type GetPackageData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/api/v1/packages/{package}';
-};
-
-export type GetPackageResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
-};
 
 export type GetCoverageData = {
     body?: never;
